@@ -10,7 +10,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # ===== FUNCION PARA BUSCAR CLIENTE =====
 def buscar_cliente(valor):
-    url = f"https://sheets.googleapis.com/v4/spreadsheets/{GOOGLE_SHEET_ID}/values/Hoja1?key={GOOGLE_API_KEY}"
+    url = f"https://sheets.googleapis.com/v4/spreadsheets/{GOOGLE_SHEET_ID}/values/prueba%20polizas!A:Z?key={GOOGLE_API_KEY}"
     
     response = requests.get(url)
     data = response.json()
