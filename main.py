@@ -32,7 +32,7 @@ def buscar_cliente(valor):
     return {"mensaje": "Cliente no encontrado"}
 
 # ===== ENDPOINT PRINCIPAL =====
-@app.get("/")
+@app.get("/buscar")
 def home():
     return {"mensaje": "Servidor funcionando 🔥"}
 
