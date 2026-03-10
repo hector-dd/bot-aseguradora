@@ -1,42 +1,40 @@
 from fastapi import FastAPI, Request
-import requests
-import os
+from whatsapp import send_message
+from conversation import handle_message
 
 app = FastAPI()
 
-# ===== CONFIG =====
-GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-# ===== FUNCION PARA BUSCAR CLIENTE =====
-def buscar_cliente(valor):
-    url = f"https://sheets.googleapis.com/v4/spreadsheets/{GOOGLE_SHEET_ID}/values/prueba%20polizas!A:Z?key={GOOGLE_API_KEY}"
-    
-    response = requests.get(url)
-    data = response.json()
+VERIFY_TOKEN = "mi_token_verificacion"
 
-    if "values" not in data:
-        return {"error": "No se pudieron obtener datos del Sheet"}
 
-    filas = data["values"]
+@app.get("/webhook")
+async def verify(mode: str=None, challenge: str=None, verify_token: str=None):
 
-    for fila in filas:
-        if valor.lower() in [celda.lower() for celda in fila]:
-            return {
-                "cliente": fila[0],
-                "poliza": fila[1],
-                "telefono": fila[2],
-                "estatus": fila[3]
-            }
+    if verify_token == VERIFY_TOKEN:
+        return int(challenge)
 
-    return {"mensaje": "Cliente no encontrado"}
+    return "error"
 
-# ===== ENDPOINT PRINCIPAL =====
-@app.get("/buscar")
-def home():
-    return {"mensaje": "Servidor funcionando 🔥"}
 
-# ===== ENDPOINT DE BUSQUEDA =====
-@app.get("/buscar")
-def buscar(valor: str):
-    return buscar_cliente(valor)
+@app.post("/webhook")
+async def webhook(request: Request):
+
+    data = await request.json()
+
+    try:
+
+        message = data["entry"][0]["changes"][0]["value"]["messages"][0]
+
+        text = message["text"]["body"]
+
+        sender = message["from"]
+
+        response = handle_message(sender, text)
+
+        send_message(sender, response)
+
+    except:
+        pass
+
+    return {"status":"ok"}

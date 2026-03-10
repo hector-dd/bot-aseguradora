@@ -1,26 +1,23 @@
 import requests
 import os
 
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 
-def enviar_mensaje(numero, mensaje):
+def send_message(to, message):
+
     url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
 
     headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Authorization": f"Bearer {WHATSAPP_TOKEN}",
         "Content-Type": "application/json"
     }
 
     data = {
         "messaging_product": "whatsapp",
-        "to": numero,
+        "to": to,
         "type": "text",
-        "text": {
-            "body": mensaje
-        }
+        "text": {"body": message}
     }
 
-    response = requests.post(url, headers=headers, json=data)
-    print(response.status_code, response.text)
-    return response.json()
+    requests.post(url, headers=headers, json=data)
